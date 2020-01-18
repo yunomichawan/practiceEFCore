@@ -122,19 +122,20 @@ namespace Practice
             {
                 Console.WriteLine(Environment.NewLine);
                 Console.WriteLine("データの削除");
-                
-                // エリア、店舗、売上情報取得
-                MArea area = sampleEntities.Areas
-                    .Include(a => a.Shops)
-                        .ThenInclude(shop => shop.SalesDailies)
-                    .Include(a => a.Shops)
-                        .ThenInclude(shop => shop.SalesMonthlies)
-                        .FirstOrDefault();
 
+                // エリア情報取得
+                // 子要素を取得しなくても、リレーションデータの削除を確認。
+                MArea area = sampleEntities.Areas.FirstOrDefault();
+                    //.Include(a => a.Shops)
+                    //    .ThenInclude(shop => shop.SalesDailies)
+                    //.Include(a => a.Shops)
+                    //    .ThenInclude(shop => shop.SalesMonthlies)
+                    //    .FirstOrDefault();
+                
                 // 削除データの確認
                 this.OutputObject(area);
-
-                // DbSet経由の削除
+                
+                // 削除
                 sampleEntities.Remove(area);
 
                 // 削除内容の保存

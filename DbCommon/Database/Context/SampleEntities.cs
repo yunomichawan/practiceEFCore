@@ -45,6 +45,8 @@ namespace DbCommon.Database.Context
             modelBuilder.Entity<MShop>()
                 .HasOne(s => s.Area)
                 .WithMany(a => a.Shops);
+            // HasForeignKeyを使用して任意で外部キーを指定することも可能。
+            //.HasForeignKey(s => s.AreaId);
 
             // 店舗情報と売上高（日別）で1:nの関係を作成
             modelBuilder.Entity<TDailySales>()
