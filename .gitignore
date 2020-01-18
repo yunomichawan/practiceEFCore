@@ -3,3 +3,8 @@
 ################################################################################
 
 /DbCommon/bin/Debug/netstandard2.0
+/DbCommon/obj
+/DbCommon/Properties
+/PracticeEntityFrameworkCore/.vs/PracticeEntityFrameworkCore
+/PracticeEntityFrameworkCore/Practice/obj
+/PracticeEntityFrameworkCore/Practice/bin/Debug/netcoreapp3.1
