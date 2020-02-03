@@ -1,0 +1,88 @@
+
+各パッケージ間の依存関係を定義する。
+
+定義しなかった場合、下記のことが懸念される
+・速度遅延…コンパイル時に見に行くとかなんとか。
+・バグ発見…各パッケージ間の依存関係を明示するため、パッケージが足りない等でコンパイルエラーになった場合、真っ先に発見できる。
+・intellisense…表示されず、コーディング速度の低下
+
+
+// Sample
+module pc {
+	// exports pc.api; // 外部に公開するパッケージ
+	
+	// モジュールに必要なパッケージを定義
+	// 間接エクスポート (transitive)
+	// イメージとしては「transitive = public」、何も付けなかった場合、privateになる。
+	requires transitive mouse;
+	requires battery;
+	requires transitive keyboard;
+}
+
+
+module usecasePC {
+	// pc内で間接エクスポートしているパッケージは参照することができる
+	requires pc;
+	requires user;
+}
+
+qiita記事化
+
+## 前置き
+いつもはC#で開発をしていますが、使用するAPIにC#用のインターフェースがまだ整っていなくJavaで開発を始めてみました。
+あまりJavaは触ったことがなかったため、C#でいう「xxxx」はJavaでいう「xxxx」というのをまとめてみました。
+私がよく使っている予約語、実装方法が中心となっています。
+
+
+## C#とJavaのお作法の違い
+
+### 予約語、書き方の違い
+C#、Javaでの書き方の違い、変わらない点をまとめてみました。
+似ていると思った項目を横並びにして比較してみます。
+
+差異|C#					|Java				|備考																|
+	|namespace			|package			|																	|
+	|using				|import				|																	|
+なし|class				|class				|																	|
+なし|interface			|interface			|																	|
+なし|abstract			|abstract			|																	|
+	|virtual			|なし				|継承先で関数をoverride可能にする場合、C#はvirtualを付与、Javaはなし|
+	|override			|@Override			|C#は定義に含めるが、Javaはアノテーション(C#で言う属性、Attribute)	|
+	|:					|extends			|継承																|
+	|sealed				|final				|クラス継承禁止、Javaでは関数のoverride禁止としても使用する			|
+なし|Enum				|Enuml				|																	|
+	|struct				|なし				|																	|
+	|const				|final				|																	|
+	|Action				|Runnable			|引数がない場合														|
+	|Action<T>			|Consumer<T>		|引数の数が変わる場合、C#はActionで変わらず、JavaはConsumer			|
+なし|Function<T,R>		|Function<T,R>		|引数が1つの場合													|
+	|Function<T1,T2,R>	|BiFunction<T1,T2,R>|引数の数が変わる場合、C#はFunctionで変わらず、JavaはBiFunction		|
+
+Javaには「struct」、「virtual」がありませんでした。
+「struct」はclassで代用できるため問題ないですが、「virtual」は無いと少し困るため少し掘り下げてみます。
+
+C#では「virtual」でoverrideを可能にし、Javaは「final」でoverrideを禁止します。
+つまりJavaの関数に「final」を付けなかった場合、C#の感覚で言うと常に「virtual」での実装になります。
+ちょっと気を付けた方がいいかもしれません。
+Javaにしかない機能を持った予約語などもあるかと思いますが、C#でよく使っているものを対象としているためよしとします。
+
+### 実装方法の違い
+C#での実装方法、Javaでの実装方法、どちらにしかない実装方法をまとめてみました。
+こちらも似ていると思った項目を横並びにして比較してみます。
+~~1つだけJavaのみの実装が混じってるというツッコミはなしで~~
+
+やりたいこと				|C#									|Java										|
+属性自作					|Attributeの継承					|@interface									|
+拡張メソッド				|public static class				|なし										|
+interfaceのデフォルト実装	|なし								|interfaceを継承し、メンバをdefaultで定義	|
+型パラメータの制約			|where T: int						|<T extends int>							|
+例)void Test<T>(T arg)		|void Test<T>(T arg) where T : int	|void Test<T extends int>(T arg)			|
+
+実装方法が違ったり、C#、Javaのどちらにしかない実装方法がありました。
+その中でもinterfaceのデフォルト実装は便利そうですね。
+abstractとinterfaceで迷い後者で実装したけど、継承先で同じ実装を行った経験がある人はきっといるはず。~~私です~~
+これは是非活用していきたいですね。
+
+## 最後に
+C#とJavaは似ていると聞いたことはありましたが、予約語に同じものが多かったりと確かに似ていると感じました。
+ただ似た書き方をしていながら、異なる動きをする場合があるため、エラーが起きた場合に嵌らないようにしたいですね。
